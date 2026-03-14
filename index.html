@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hippogotchi - Mi Compañero de Tareas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-blue-50 flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md text-center">
+        <h1 class="text-3xl font-bold text-blue-600 mb-4">Hippogotchi 🦛</h1>
+        
+        <div id="hippo-container" class="text-8xl mb-6 transition-all duration-500">
+            🦛
+        </div>
+
+        <div class="flex justify-around mb-6 text-sm font-semibold">
+            <div>💧 Agua: <span id="water-stat">100</span>%</div>
+            <div>🍎 Energía: <span id="energy-stat">100</span>%</div>
+        </div>
+
+        <button onclick="feedHippo()" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full font-bold transition">
+            Dar de beber
+        </button>
+    </div>
+
+    <script>
+        // Lógica inicial sencilla
+        let water = 100;
+        
+        function feedHippo() {
+            if(water < 100) {
+                water += 10;
+                updateUI();
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('water-stat').innerText = water;
+        }
+
+        // Simulación: El hipopótamo tiene sed cada 3 segundos
+        setInterval(() => {
+            if(water > 0) {
+                water -= 5;
+                updateUI();
+            }
+            if(water < 30) {
+                document.getElementById('hippo-container').innerText = "😫";
+            } else {
+                document.getElementById('hippo-container').innerText = "🦛";
+            }
+        }, 3000);
+    </script>
+</body>
+</html>
