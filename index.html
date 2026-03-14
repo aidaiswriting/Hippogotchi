@@ -3,55 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hippogotchi - Mi Compañero de Tareas</title>
+    <title>Hippogotchi - Cuídalo, cuídate</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-blue-50 flex flex-col items-center justify-center min-h-screen p-4">
+<body class="bg-blue-50 flex flex-col items-center justify-center min-h-screen p-4 font-sans">
 
-    <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md text-center">
-        <h1 class="text-3xl font-bold text-blue-600 mb-4">Hippogotchi 🦛</h1>
+    <div class="bg-white p-6 rounded-3xl shadow-xl w-full max-w-lg text-center">
+        <h1 class="text-3xl font-bold text-blue-600 mb-2">Hippogotchi 🦛</h1>
         
-        <div id="hippo-container" class="text-8xl mb-6 transition-all duration-500">
-            🦛
+        <div id="hippo-container" class="text-7xl mb-4 transition-all duration-500">🦛</div>
+
+        <div class="bg-blue-100 p-4 rounded-xl mb-4">
+            <h2 class="font-bold text-blue-800 mb-2">Necesidades Básicas</h2>
+            <div class="grid grid-cols-3 gap-2 text-sm font-semibold mb-3">
+                <div>💧 Sed: <span id="stat-sed">100</span>%</div>
+                <div>🍎 Hambre: <span id="stat-hambre">100</span>%</div>
+                <div>💤 Descanso: <span id="stat-descanso">100</span>%</div>
+            </div>
+            <div class="flex justify-center gap-2">
+                <button onclick="updateStat('basicas', 'sed', 15)" class="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-2 rounded-lg font-bold">Beber Agua</button>
+                <button onclick="updateStat('basicas', 'hambre', 20)" class="bg-green-500 hover:bg-green-600 text-white text-xs px-3 py-2 rounded-lg font-bold">Comer Sano</button>
+                <button onclick="updateStat('basicas', 'descanso', 25)" class="bg-purple-500 hover:bg-purple-600 text-white text-xs px-3 py-2 rounded-lg font-bold">Respirar</button>
+            </div>
         </div>
 
-        <div class="flex justify-around mb-6 text-sm font-semibold">
-            <div>💧 Agua: <span id="water-stat">100</span>%</div>
-            <div>🍎 Energía: <span id="energy-stat">100</span>%</div>
+        <div class="bg-yellow-50 p-4 rounded-xl mb-4">
+            <h2 class="font-bold text-yellow-800 mb-2">Desarrollo Personal</h2>
+            <div class="grid grid-cols-2 gap-2 text-sm font-semibold">
+                <div>🎨 Motivación: <span id="stat-motivacion">50</span>%</div>
+                <div>🧹 Calma: <span id="stat-calma">50</span>%</div>
+                <div>💪 Fuerza: <span id="stat-fuerza">50</span>%</div>
+                <div>📈 Realización: <span id="stat-realizacion">50</span>%</div>
+            </div>
         </div>
-
-        <button onclick="feedHippo()" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full font-bold transition">
-            Dar de beber
-        </button>
     </div>
 
     <script>
-        // Lógica inicial sencilla
-        let water = 100;
-        
-        function feedHippo() {
-            if(water < 100) {
-                water += 10;
-                updateUI();
-            }
+        // Nuestro Estado Global
+        let hippoState = {
+            basicas: { sed: 100, hambre: 100, descanso: 100 },
+            desarrollo: { motivacion: 50, calma: 50, fuerza: 50, realizacion: 50 }
+        };
+
+        // Función "Inteligente" y DRY (Don't Repeat Yourself)
+        function updateStat(categoria, stat, cantidad) {
+            // Sumamos la cantidad, pero usamos Math.min para que nunca pase de 100
+            hippoState[categoria][stat] = Math.min(100, hippoState[categoria][stat] + cantidad);
+            renderUI();
         }
 
-        function updateUI() {
-            document.getElementById('water-stat').innerText = water;
+        // Función que "pinta" los datos en el HTML
+        function renderUI() {
+            // Básicas
+            document.getElementById('stat-sed').innerText = hippoState.basicas.sed;
+            document.getElementById('stat-hambre').innerText = hippoState.basicas.hambre;
+            document.getElementById('stat-descanso').innerText = hippoState.basicas.descanso;
+            
+            // Desarrollo
+            document.getElementById('stat-motivacion').innerText = hippoState.desarrollo.motivacion;
+            document.getElementById('stat-calma').innerText = hippoState.desarrollo.calma;
+            document.getElementById('stat-fuerza').innerText = hippoState.desarrollo.fuerza;
+            document.getElementById('stat-realizacion').innerText = hippoState.desarrollo.realizacion;
         }
 
-        // Simulación: El hipopótamo tiene sed cada 3 segundos
+        // Simulación: El hipopótamo consume sus stats básicas con el tiempo
         setInterval(() => {
-            if(water > 0) {
-                water -= 5;
-                updateUI();
-            }
-            if(water < 30) {
-                document.getElementById('hippo-container').innerText = "😫";
-            } else {
-                document.getElementById('hippo-container').innerText = "🦛";
-            }
-        }, 3000);
+            hippoState.basicas.sed = Math.max(0, hippoState.basicas.sed - 2);
+            hippoState.basicas.hambre = Math.max(0, hippoState.basicas.hambre - 1);
+            hippoState.basicas.descanso = Math.max(0, hippoState.basicas.descanso - 1);
+            renderUI();
+        }, 5000); // Cada 5 segundos para probar
     </script>
 </body>
 </html>
