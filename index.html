@@ -101,7 +101,7 @@
                     </div>
                 </div>
 
-                <div class="w-full flex-1">
+               <div class="w-full flex-1">
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="text-gray-400 text-sm border-b-2 border-blue-100">
@@ -113,28 +113,16 @@
                             </tr>
                         </thead>
                         <tbody id="task-list-body" class="text-sm">
-                            <tr class="border-b border-blue-50 hover:bg-blue-50/50 transition-colors">
-                                <td class="py-4 pl-2 font-medium text-gray-600 text-base">Revisar correos</td>
-                                <td class="py-4 text-center"><span class="bg-red-50 text-red-600 px-3 py-1 rounded-full text-xs font-bold shadow-sm">🔴 Alta</span></td>
-                                <td class="py-4 text-gray-500 text-center">Hoy 10:00</td>
-                                <td class="py-4 text-gray-500 text-center">Realización</td>
-                                <td class="py-4 text-center"><input type="checkbox" class="w-5 h-5 accent-btn-blue cursor-pointer"></td>
-                            </tr>
-                            <tr class="border-b border-blue-50 hover:bg-blue-50/50 transition-colors">
-                                <td class="py-4 pl-2 font-medium text-gray-600 text-base">Meditar 10 min</td>
-                                <td class="py-4 text-center"><span class="bg-green-50 text-green-600 px-3 py-1 rounded-full text-xs font-bold shadow-sm">🟢 Baja</span></td>
-                                <td class="py-4 text-gray-500 text-center">Hoy 20:00</td>
-                                <td class="py-4 text-gray-500 text-center">Calma</td>
-                                <td class="py-4 text-center"><input type="checkbox" class="w-5 h-5 accent-btn-blue cursor-pointer"></td>
-                            </tr>
                         </tbody>
                     </table>
                 </div>
 
                 <div class="mt-6 bg-white rounded-full p-2 pl-6 shadow-[0_4px_20px_-5px_rgba(0,0,0,0.05)] border border-blue-50 flex items-center gap-3">
-                    <input type="text" placeholder="Escribe una nueva tarea..." class="flex-1 bg-transparent text-gray-600 outline-none text-sm placeholder-gray-400">
+                    <input id="input-task-name" type="text" placeholder="Escribe una nueva tarea..." class="flex-1 bg-transparent text-gray-600 outline-none text-sm placeholder-gray-400">
                     
-                    <div class="h-6 w-px bg-gray-200"></div> <select class="bg-transparent text-sm text-gray-500 outline-none cursor-pointer pr-2">
+                    <div class="h-6 w-px bg-gray-200"></div>
+                    
+                    <select id="input-task-prio" class="bg-transparent text-sm text-gray-500 outline-none cursor-pointer pr-2">
                         <option value="alta">🔴 Alta</option>
                         <option value="media" selected>🟡 Media</option>
                         <option value="baja">🟢 Baja</option>
@@ -142,23 +130,22 @@
                     
                     <div class="h-6 w-px bg-gray-200"></div>
                     
-                    <input type="time" class="bg-transparent text-sm text-gray-500 outline-none">
+                    <input id="input-task-date" type="datetime-local" class="bg-transparent text-sm text-gray-500 outline-none">
                     
                     <div class="h-6 w-px bg-gray-200"></div>
                     
-                    <select class="bg-transparent text-sm text-gray-500 outline-none cursor-pointer pr-2">
+                    <select id="input-task-cat" class="bg-transparent text-sm text-gray-500 outline-none cursor-pointer pr-2">
                         <option value="motivacion">Motivación</option>
                         <option value="calma">Calma</option>
                         <option value="fuerza">Fuerza</option>
                         <option value="realizacion">Realización</option>
                     </select>
 
-                    <button class="bg-btn-blue text-white px-6 py-2.5 rounded-full font-bold hover:bg-blue-800 transition shadow-sm text-sm">
+                    <button onclick="addTask()" class="bg-btn-blue text-white px-6 py-2.5 rounded-full font-bold hover:bg-blue-800 transition shadow-sm text-sm">
                         Añadir
                     </button>
                 </div>
-
-            </div>
+                </div>
 
             <button class="bg-btn-blue text-white px-10 py-3.5 rounded-full font-bold shadow-md hover:bg-blue-800 transition-colors self-start">
                 Iniciar Pomodoro ⏱️
@@ -167,39 +154,166 @@
     </div>
 
     <script>
+        // --- 1. SINTETIZADOR DE AUDIO (Web Audio API) ---
+        // Generamos sonidos matemáticamente para no depender de archivos externos
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const audioCtx = new AudioContext();
+
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            if (type === 'click') {
+                // Sonido corto y grave (bloop)
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+            } else if (type === 'success') {
+                // Sonido agudo y alegre (ding!)
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(800, audioCtx.currentTime + 0.1); // Sube el tono
+                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+            }
+        }
+
+        // --- 2. EL ESTADO GLOBAL ---
         let hippoState = {
             basicas: { sed: 80, hambre: 70, descanso: 60 },
             desarrollo: { motivacion: 50, calma: 50, fuerza: 50, realizacion: 50 },
             historial: [], 
+            tareasPendientes: [], // NUEVO: Array para guardar las tareas de la tabla
             ui: { vistaActiva: 'lista', pantallaActiva: 'dashboard' } 
         };
 
+        // --- 3. LÓGICA DE TAREAS ---
+        
+        // Poner la fecha de "hoy" por defecto en el input
+        function setDefaultDateTime() {
+            const now = new Date();
+            // Formatear a YYYY-MM-DDThh:mm (Requerido por datetime-local)
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('input-task-date').value = now.toISOString().slice(0, 16);
+        }
+
+        function addTask() {
+            const nameInput = document.getElementById('input-task-name');
+            const prioInput = document.getElementById('input-task-prio');
+            const dateInput = document.getElementById('input-task-date');
+            const catInput = document.getElementById('input-task-cat');
+
+            // Condición: Que haya texto
+            if (nameInput.value.trim() !== "") {
+                
+                // Creamos el objeto de la tarea
+                const nuevaTarea = {
+                    id: Date.now(), // Un ID único basado en el milisegundo actual
+                    nombre: nameInput.value.trim(),
+                    prioridad: prioInput.value,
+                    fechaStr: new Date(dateInput.value).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', hour: '2-digit', minute:'2-digit' }),
+                    categoria: catInput.value
+                };
+
+                // Añadimos al cerebro
+                hippoState.tareasPendientes.push(nuevaTarea);
+                
+                // Efectos visuales y sonoros
+                playSound('click');
+                nameInput.value = ""; // Limpiamos el texto
+                renderTasks(); // Repintamos la tabla
+            }
+        }
+
+        function completeTask(taskId, categoria) {
+            playSound('success'); // ¡Ding!
+            
+            // 1. Encontrar la tarea y sacarla de pendientes
+            const index = hippoState.tareasPendientes.findIndex(t => t.id === taskId);
+            if (index !== -1) {
+                const tareaCompletada = hippoState.tareasPendientes[index];
+                hippoState.tareasPendientes.splice(index, 1); // La borramos de la tabla
+                
+                // 2. Moverla al historial
+                hippoState.historial.push({
+                    accion: `Completado: ${tareaCompletada.nombre}`,
+                    fecha: new Date().toLocaleString()
+                });
+
+                // 3. Subir la estadística correspondiente al Hipopótamo (+15%)
+                hippoState.desarrollo[categoria] = Math.min(100, hippoState.desarrollo[categoria] + 15);
+                
+                // 4. Actualizar toda la interfaz
+                renderTasks();
+                renderUI();
+            }
+        }
+
+        // --- 4. RENDERIZADO BÁSICO ---
         function doAction(stat, cantidad, nombreAccion) {
             if (hippoState.basicas[stat] < 100) {
+                playSound('click');
                 hippoState.basicas[stat] = Math.min(100, hippoState.basicas[stat] + cantidad);
                 hippoState.historial.push({ accion: nombreAccion, fecha: new Date().toLocaleString() });
                 renderUI();
             }
         }
 
+        function renderTasks() {
+            const tbody = document.getElementById('task-list-body');
+            tbody.innerHTML = ''; // Vaciamos la tabla HTML
+
+            // Diccionario para las banderas
+            const badges = {
+                'alta': '<span class="bg-red-50 text-red-600 px-3 py-1 rounded-full text-xs font-bold shadow-sm">🔴 Alta</span>',
+                'media': '<span class="bg-yellow-50 text-yellow-600 px-3 py-1 rounded-full text-xs font-bold shadow-sm">🟡 Media</span>',
+                'baja': '<span class="bg-green-50 text-green-600 px-3 py-1 rounded-full text-xs font-bold shadow-sm">🟢 Baja</span>'
+            };
+
+            // Reconstruimos la tabla leyendo el array
+            hippoState.tareasPendientes.forEach(tarea => {
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-blue-50 hover:bg-blue-50/50 transition-colors";
+                tr.innerHTML = `
+                    <td class="py-4 pl-2 font-medium text-gray-600 text-base">${tarea.nombre}</td>
+                    <td class="py-4 text-center">${badges[tarea.prioridad]}</td>
+                    <td class="py-4 text-gray-500 text-center">${tarea.fechaStr}</td>
+                    <td class="py-4 text-gray-500 text-center capitalize">${tarea.categoria}</td>
+                    <td class="py-4 text-center">
+                        <input type="checkbox" onchange="completeTask(${tarea.id}, '${tarea.categoria}')" class="w-5 h-5 accent-btn-blue cursor-pointer">
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
         function renderUI() {
-            // Stats Básicas
             document.getElementById('bar-sed').style.width = hippoState.basicas.sed + '%';
             document.getElementById('bar-descanso').style.width = hippoState.basicas.descanso + '%';
             document.getElementById('bar-hambre').style.width = hippoState.basicas.hambre + '%';
 
-            // Stats Dinámicas (Ahora sí se actualizan visualmente si tuviéramos botones para ellas)
             document.getElementById('bar-motivacion').style.height = hippoState.desarrollo.motivacion + '%';
             document.getElementById('bar-calma').style.height = hippoState.desarrollo.calma + '%';
             document.getElementById('bar-fuerza').style.height = hippoState.desarrollo.fuerza + '%';
             document.getElementById('bar-realizacion').style.height = hippoState.desarrollo.realizacion + '%';
 
-            // UX Disable State
             document.getElementById('btn-beber').disabled = (hippoState.basicas.sed >= 100);
             document.getElementById('btn-respirar').disabled = (hippoState.basicas.descanso >= 100);
             document.getElementById('btn-comer').disabled = (hippoState.basicas.hambre >= 100);
         }
 
+        // Inicialización de la aplicación
+        setDefaultDateTime();
+        renderTasks(); // Renderizará vacío al principio
         renderUI();
     </script>
 </body>
