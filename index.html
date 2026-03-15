@@ -4,212 +4,202 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hippogotchi - Mi Compañero</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: { sans: ['Montserrat', 'sans-serif'] },
-                    colors: { 'app-bg': '#D2E3F3', 'panel-bg': '#EEF5FC', 'btn-blue': '#104A8E' }
+                    colors: { 
+                        'app-bg': '#E6F0FA', // Un fondo un poco más suave y relajante
+                        'panel-bg': '#F4F9FF', // Blanco roto azulado para máxima paz
+                        'btn-blue': '#1D5A9E', // Azul con un tono un poco más amable
+                        'btn-orange': '#FFA33A'
+                    }
                 }
             }
         }
     </script>
 </head>
-<body class="bg-app-bg min-h-screen p-4 md:p-8 flex justify-center items-center">
+<body class="bg-app-bg min-h-screen p-8 flex flex-col items-center text-gray-700">
 
-    <div class="w-full max-w-6xl grid grid-cols-1 md:grid-cols-12 gap-6">
+    <div id="pantalla-dashboard" class="w-full max-w-7xl grid grid-cols-12 gap-8 relative">
 
-        <div class="col-span-1 md:col-span-4 bg-panel-bg rounded-[2rem] p-6 shadow-sm flex flex-col items-center">
-            <h1 class="text-3xl font-extrabold text-gray-700 mb-6 border-b-2 border-red-300 pb-1">Hippogotchi</h1>
-            <div id="hippo-emoji" class="text-8xl mb-6 transition-all duration-300">🦛</div>
+        <div class="col-span-4 flex flex-col gap-6">
+            
+            <div class="bg-panel-bg rounded-[2.5rem] p-8 shadow-sm flex flex-col items-center border border-white">
+                <h1 class="text-3xl font-extrabold text-btn-blue mb-6 tracking-tight">Hippogotchi</h1>
+                <div id="hippo-emoji" class="text-9xl mb-8 transition-all duration-300 drop-shadow-sm">🦛</div>
 
-            <div class="w-full space-y-4 mb-8">
-                <div class="flex items-center gap-3">
-                    <span class="text-xl">💧</span>
-                    <div class="flex-1 bg-white rounded-full h-4 shadow-inner overflow-hidden">
-                        <div id="bar-sed" class="bg-blue-400 h-full rounded-full transition-all duration-500" style="width: 100%"></div>
+                <div class="w-full space-y-5 mb-10">
+                    <div class="flex items-center gap-4">
+                        <span class="text-2xl">💧</span>
+                        <div class="flex-1 bg-blue-100 rounded-full h-4 shadow-inner overflow-hidden">
+                            <div id="bar-sed" class="bg-blue-400 h-full rounded-full transition-all duration-500" style="width: 80%"></div>
+                        </div>
+                        <button id="btn-beber" onclick="doAction('sed', 20, 'Vaso de agua')" class="bg-btn-blue text-white text-xs px-5 py-2 rounded-full font-bold w-24 hover:bg-blue-700 hover:shadow-md transition-all disabled:opacity-40 disabled:cursor-not-allowed">Beber</button>
                     </div>
-                    <button onclick="updateStat('basicas', 'sed', 20)" class="bg-btn-blue text-white text-xs px-4 py-1.5 rounded-full hover:opacity-90 transition font-semibold w-20">Beber</button>
+                    <div class="flex items-center gap-4">
+                        <span class="text-2xl">🌻</span>
+                        <div class="flex-1 bg-yellow-100 rounded-full h-4 shadow-inner overflow-hidden">
+                            <div id="bar-descanso" class="bg-yellow-400 h-full rounded-full transition-all duration-500" style="width: 60%"></div>
+                        </div>
+                        <button id="btn-respirar" onclick="doAction('descanso', 25, 'Respiración')" class="bg-btn-blue text-white text-xs px-5 py-2 rounded-full font-bold w-24 hover:bg-blue-700 hover:shadow-md transition-all disabled:opacity-40 disabled:cursor-not-allowed">Respirar</button>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span class="text-2xl">🍎</span>
+                        <div class="flex-1 bg-red-100 rounded-full h-4 shadow-inner overflow-hidden">
+                            <div id="bar-hambre" class="bg-red-400 h-full rounded-full transition-all duration-500" style="width: 70%"></div>
+                        </div>
+                        <button id="btn-comer" onclick="doAction('hambre', 30, 'Comida sana')" class="bg-btn-blue text-white text-xs px-5 py-2 rounded-full font-bold w-24 hover:bg-blue-700 hover:shadow-md transition-all disabled:opacity-40 disabled:cursor-not-allowed">Comer</button>
+                    </div>
                 </div>
-                <div class="flex items-center gap-3">
-                    <span class="text-xl">🌻</span>
-                    <div class="flex-1 bg-white rounded-full h-4 shadow-inner overflow-hidden">
-                        <div id="bar-descanso" class="bg-yellow-400 h-full rounded-full transition-all duration-500" style="width: 100%"></div>
+
+                <div class="flex justify-between w-full px-4 mt-auto">
+                    <div class="flex flex-col items-center gap-3">
+                        <div class="relative w-8 h-28 bg-orange-50 rounded-full shadow-inner overflow-hidden">
+                            <div id="bar-motivacion" class="absolute bottom-0 w-full bg-orange-300 rounded-full transition-all duration-500" style="height: 50%"></div>
+                        </div>
+                        <span class="text-xs text-gray-500 font-semibold tracking-widest" style="writing-mode: vertical-rl; transform: rotate(180deg);">Motivación</span>
                     </div>
-                    <button onclick="updateStat('basicas', 'descanso', 25)" class="bg-btn-blue text-white text-xs px-4 py-1.5 rounded-full hover:opacity-90 transition font-semibold w-20">Respirar</button>
-                </div>
-                <div class="flex items-center gap-3">
-                    <span class="text-xl">🍎</span>
-                    <div class="flex-1 bg-white rounded-full h-4 shadow-inner overflow-hidden">
-                        <div id="bar-hambre" class="bg-red-400 h-full rounded-full transition-all duration-500" style="width: 100%"></div>
+                    <div class="flex flex-col items-center gap-3">
+                        <div class="relative w-8 h-28 bg-teal-50 rounded-full shadow-inner overflow-hidden">
+                            <div id="bar-calma" class="absolute bottom-0 w-full bg-teal-300 rounded-full transition-all duration-500" style="height: 50%"></div>
+                        </div>
+                        <span class="text-xs text-gray-500 font-semibold tracking-widest" style="writing-mode: vertical-rl; transform: rotate(180deg);">Calma</span>
                     </div>
-                    <button onclick="updateStat('basicas', 'hambre', 30)" class="bg-btn-blue text-white text-xs px-4 py-1.5 rounded-full hover:opacity-90 transition font-semibold w-20">Comer</button>
+                    <div class="flex flex-col items-center gap-3">
+                        <div class="relative w-8 h-28 bg-red-50 rounded-full shadow-inner overflow-hidden">
+                            <div id="bar-fuerza" class="absolute bottom-0 w-full bg-red-300 rounded-full transition-all duration-500" style="height: 50%"></div>
+                        </div>
+                        <span class="text-xs text-gray-500 font-semibold tracking-widest" style="writing-mode: vertical-rl; transform: rotate(180deg);">Fuerza</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-3">
+                        <div class="relative w-8 h-28 bg-purple-50 rounded-full shadow-inner overflow-hidden">
+                            <div id="bar-realizacion" class="absolute bottom-0 w-full bg-purple-300 rounded-full transition-all duration-500" style="height: 50%"></div>
+                        </div>
+                        <span class="text-xs text-gray-500 font-semibold tracking-widest" style="writing-mode: vertical-rl; transform: rotate(180deg);">Realización</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="flex justify-between w-full px-2 mt-auto">
-                <div class="flex flex-col items-center gap-3">
-                    <div class="relative w-8 h-24 bg-white rounded-full shadow-inner overflow-hidden border border-gray-200">
-                        <div id="bar-motivacion" class="absolute bottom-0 w-full bg-orange-300 rounded-full transition-all duration-500" style="height: 50%"></div>
-                    </div>
-                    <span class="text-xs text-gray-600 font-semibold" style="writing-mode: vertical-rl; transform: rotate(180deg);">Motivación</span>
-                </div>
-                <div class="flex flex-col items-center gap-3">
-                    <div class="relative w-8 h-24 bg-white rounded-full shadow-inner overflow-hidden border border-gray-200">
-                        <div id="bar-calma" class="absolute bottom-0 w-full bg-teal-300 rounded-full transition-all duration-500" style="height: 50%"></div>
-                    </div>
-                    <span class="text-xs text-gray-600 font-semibold" style="writing-mode: vertical-rl; transform: rotate(180deg);">Calma</span>
-                </div>
-                <div class="flex flex-col items-center gap-3">
-                    <div class="relative w-8 h-24 bg-white rounded-full shadow-inner overflow-hidden border border-gray-200">
-                        <div id="bar-fuerza" class="absolute bottom-0 w-full bg-red-300 rounded-full transition-all duration-500" style="height: 50%"></div>
-                    </div>
-                    <span class="text-xs text-gray-600 font-semibold" style="writing-mode: vertical-rl; transform: rotate(180deg);">Fuerza</span>
-                </div>
-                <div class="flex flex-col items-center gap-3">
-                    <div class="relative w-8 h-24 bg-white rounded-full shadow-inner overflow-hidden border border-gray-200">
-                        <div id="bar-realizacion" class="absolute bottom-0 w-full bg-purple-300 rounded-full transition-all duration-500" style="height: 50%"></div>
-                    </div>
-                    <span class="text-xs text-gray-600 font-semibold" style="writing-mode: vertical-rl; transform: rotate(180deg);">Realización</span>
-                </div>
-            </div>
+            <button class="bg-white text-btn-blue border-2 border-btn-blue rounded-full py-3.5 font-bold shadow-sm hover:bg-blue-50 transition-colors">
+                ¿Cómo estás?
+            </button>
         </div>
 
-        <div class="col-span-1 md:col-span-8 flex flex-col gap-4">
+        <div class="col-span-8 flex flex-col gap-6">
             
-            <div class="bg-panel-bg rounded-[2rem] p-8 shadow-sm flex-1 min-h-[400px] flex flex-col">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-gray-600">Mis tareas</h2>
-                    <div class="flex gap-2">
-                        <button class="bg-btn-blue text-white px-5 py-1.5 rounded-full text-sm font-semibold hover:opacity-90 transition">Calendario</button>
-                        <button class="bg-btn-blue text-white px-5 py-1.5 rounded-full text-sm font-semibold hover:opacity-90 transition">Lista</button>
+            <div class="bg-panel-bg rounded-[2.5rem] p-8 shadow-sm flex flex-col flex-1 border border-white">
+                
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-700">Mis tareas</h2>
+                    <div class="bg-blue-100/50 p-1.5 rounded-full flex gap-1">
+                        <button class="text-gray-500 px-6 py-2 rounded-full text-sm font-semibold hover:text-gray-700 transition">Calendario</button>
+                        <button class="bg-white text-btn-blue shadow-sm px-6 py-2 rounded-full text-sm font-bold">Lista</button>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-xl overflow-hidden border border-gray-200 flex-1">
+                <div class="w-full flex-1">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-gray-50 border-b border-gray-200 text-gray-500 text-sm">
-                                <th class="p-4 font-semibold">Tarea</th>
-                                <th class="p-4 font-semibold border-l border-gray-200">Categoría</th>
-                                <th class="p-4 font-semibold border-l border-gray-200">Fecha/Hora</th>
-                                <th class="p-4 font-semibold border-l border-gray-200 text-center">Acción</th>
+                            <tr class="text-gray-400 text-sm border-b-2 border-blue-100">
+                                <th class="pb-3 font-medium pl-2 w-2/5">Tarea</th>
+                                <th class="pb-3 font-medium text-center">Prioridad</th>
+                                <th class="pb-3 font-medium text-center">Fecha límite</th>
+                                <th class="pb-3 font-medium text-center">Categoría</th>
+                                <th class="pb-3 font-medium text-center">Hecha</th>
                             </tr>
                         </thead>
-                        <tbody id="task-table-body">
-                            <tr id="task-1" class="border-b border-gray-200 hover:bg-gray-50 transition">
-                                <td class="p-4 text-gray-700 font-medium line-through-target">Estirar 10 min</td>
-                                <td class="p-4 text-orange-500 border-l border-gray-200 font-medium">Fuerza</td>
-                                <td class="p-4 text-gray-500 border-l border-gray-200">Hoy, 12:30</td>
-                                <td class="p-4 border-l border-gray-200 text-center">
-                                    <input type="checkbox" onchange="completeTask('task-1', 'desarrollo', 'fuerza', 15)" class="w-5 h-5 accent-btn-blue cursor-pointer">
-                                </td>
+                        <tbody id="task-list-body" class="text-sm">
+                            <tr class="border-b border-blue-50 hover:bg-blue-50/50 transition-colors">
+                                <td class="py-4 pl-2 font-medium text-gray-600 text-base">Revisar correos</td>
+                                <td class="py-4 text-center"><span class="bg-red-50 text-red-600 px-3 py-1 rounded-full text-xs font-bold shadow-sm">🔴 Alta</span></td>
+                                <td class="py-4 text-gray-500 text-center">Hoy 10:00</td>
+                                <td class="py-4 text-gray-500 text-center">Realización</td>
+                                <td class="py-4 text-center"><input type="checkbox" class="w-5 h-5 accent-btn-blue cursor-pointer"></td>
+                            </tr>
+                            <tr class="border-b border-blue-50 hover:bg-blue-50/50 transition-colors">
+                                <td class="py-4 pl-2 font-medium text-gray-600 text-base">Meditar 10 min</td>
+                                <td class="py-4 text-center"><span class="bg-green-50 text-green-600 px-3 py-1 rounded-full text-xs font-bold shadow-sm">🟢 Baja</span></td>
+                                <td class="py-4 text-gray-500 text-center">Hoy 20:00</td>
+                                <td class="py-4 text-gray-500 text-center">Calma</td>
+                                <td class="py-4 text-center"><input type="checkbox" class="w-5 h-5 accent-btn-blue cursor-pointer"></td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-            </div>
 
-            <div class="bg-panel-bg rounded-full p-2 pl-6 shadow-sm">
-                <div class="flex flex-col md:flex-row gap-3 items-center justify-between text-sm">
-                    <input id="new-task-name" type="text" placeholder="Nombre de la tarea" class="bg-white px-4 py-2.5 rounded-full outline-none w-full flex-1">
-                    <select id="new-task-category" class="bg-white px-4 py-2.5 rounded-full w-full md:w-40 text-gray-500 outline-none cursor-pointer">
-                        <option value="" disabled selected>Categoría...</option>
+                <div class="mt-6 bg-white rounded-full p-2 pl-6 shadow-[0_4px_20px_-5px_rgba(0,0,0,0.05)] border border-blue-50 flex items-center gap-3">
+                    <input type="text" placeholder="Escribe una nueva tarea..." class="flex-1 bg-transparent text-gray-600 outline-none text-sm placeholder-gray-400">
+                    
+                    <div class="h-6 w-px bg-gray-200"></div> <select class="bg-transparent text-sm text-gray-500 outline-none cursor-pointer pr-2">
+                        <option value="alta">🔴 Alta</option>
+                        <option value="media" selected>🟡 Media</option>
+                        <option value="baja">🟢 Baja</option>
+                    </select>
+                    
+                    <div class="h-6 w-px bg-gray-200"></div>
+                    
+                    <input type="time" class="bg-transparent text-sm text-gray-500 outline-none">
+                    
+                    <div class="h-6 w-px bg-gray-200"></div>
+                    
+                    <select class="bg-transparent text-sm text-gray-500 outline-none cursor-pointer pr-2">
                         <option value="motivacion">Motivación</option>
                         <option value="calma">Calma</option>
                         <option value="fuerza">Fuerza</option>
                         <option value="realizacion">Realización</option>
                     </select>
-                    <input id="new-task-time" type="datetime-local" class="bg-white px-4 py-2.5 rounded-full outline-none w-full md:w-auto text-gray-500">
-                    <button class="bg-btn-blue text-white px-6 py-2.5 rounded-full font-bold hover:opacity-90 transition whitespace-nowrap">
-                        + Añadir
+
+                    <button class="bg-btn-blue text-white px-6 py-2.5 rounded-full font-bold hover:bg-blue-800 transition shadow-sm text-sm">
+                        Añadir
                     </button>
                 </div>
+
             </div>
 
-            <div class="bg-panel-bg rounded-full p-3 shadow-sm text-center text-sm text-gray-400 font-medium">
-                Barra de pestañas para uso futuro
-            </div>
+            <button class="bg-btn-blue text-white px-10 py-3.5 rounded-full font-bold shadow-md hover:bg-blue-800 transition-colors self-start">
+                Iniciar Pomodoro ⏱️
+            </button>
         </div>
     </div>
 
     <script>
-        // 1. Estado Global
         let hippoState = {
-            basicas: { sed: 100, hambre: 100, descanso: 100 },
-            desarrollo: { motivacion: 50, calma: 50, fuerza: 50, realizacion: 50 }
+            basicas: { sed: 80, hambre: 70, descanso: 60 },
+            desarrollo: { motivacion: 50, calma: 50, fuerza: 50, realizacion: 50 },
+            historial: [], 
+            ui: { vistaActiva: 'lista', pantallaActiva: 'dashboard' } 
         };
 
-        // 2. Configuración (Tasas de caída)
-        const DROP_RATES = {
-            sed: 100 / 120,    
-            hambre: 100 / 480, 
-            descanso: 100 / 50 
-        };
-
-        // 3. Modificar Estado (Accionada por botones)
-        function updateStat(categoria, stat, cantidad) {
-            hippoState[categoria][stat] = Math.min(100, hippoState[categoria][stat] + cantidad);
-            renderUI();
-        }
-
-        // 4. Lógica de Tareas Checkbox
-        function completeTask(taskId, categoria, stat, cantidad) {
-            // Buscamos la fila de la tarea
-            const row = document.getElementById(taskId);
-            const textElement = row.querySelector('.line-through-target');
-            const checkbox = row.querySelector('input[type="checkbox"]');
-            
-            if (checkbox.checked) {
-                // Tachamos el texto
-                textElement.classList.add('line-through', 'text-gray-400');
-                // Premiamos al hipopótamo
-                updateStat(categoria, stat, cantidad);
-            } else {
-                // Destachamos si el usuario se equivoca
-                textElement.classList.remove('line-through', 'text-gray-400');
-                // Le quitamos los puntos
-                hippoState[categoria][stat] = Math.max(0, hippoState[categoria][stat] - cantidad);
+        function doAction(stat, cantidad, nombreAccion) {
+            if (hippoState.basicas[stat] < 100) {
+                hippoState.basicas[stat] = Math.min(100, hippoState.basicas[stat] + cantidad);
+                hippoState.historial.push({ accion: nombreAccion, fecha: new Date().toLocaleString() });
                 renderUI();
             }
         }
 
-        // 5. Renderizar Interfaz (Actualiza anchos y altos del HTML)
         function renderUI() {
-            // Barras horizontales (Cambiamos el width)
+            // Stats Básicas
             document.getElementById('bar-sed').style.width = hippoState.basicas.sed + '%';
             document.getElementById('bar-descanso').style.width = hippoState.basicas.descanso + '%';
             document.getElementById('bar-hambre').style.width = hippoState.basicas.hambre + '%';
-            
-            // Barras verticales (Cambiamos el height)
+
+            // Stats Dinámicas (Ahora sí se actualizan visualmente si tuviéramos botones para ellas)
             document.getElementById('bar-motivacion').style.height = hippoState.desarrollo.motivacion + '%';
             document.getElementById('bar-calma').style.height = hippoState.desarrollo.calma + '%';
             document.getElementById('bar-fuerza').style.height = hippoState.desarrollo.fuerza + '%';
             document.getElementById('bar-realizacion').style.height = hippoState.desarrollo.realizacion + '%';
 
-            // Efecto visual si el hipo tiene sed o hambre grave (menos del 20%)
-            const hippoEmoji = document.getElementById('hippo-emoji');
-            if (hippoState.basicas.sed < 20 || hippoState.basicas.hambre < 20) {
-                hippoEmoji.innerText = "😫";
-            } else {
-                hippoEmoji.innerText = "🦛";
-            }
+            // UX Disable State
+            document.getElementById('btn-beber').disabled = (hippoState.basicas.sed >= 100);
+            document.getElementById('btn-respirar').disabled = (hippoState.basicas.descanso >= 100);
+            document.getElementById('btn-comer').disabled = (hippoState.basicas.hambre >= 100);
         }
 
-        // 6. El Bucle de Vida (Game Loop)
-        setInterval(() => {
-            hippoState.basicas.sed = Math.max(0, hippoState.basicas.sed - DROP_RATES.sed);
-            hippoState.basicas.hambre = Math.max(0, hippoState.basicas.hambre - DROP_RATES.hambre);
-            hippoState.basicas.descanso = Math.max(0, hippoState.basicas.descanso - DROP_RATES.descanso);
-            
-            renderUI();
-        }, 60000); // Se actualiza cada 1 minuto (60000 ms)
-
-        // Inicializamos la vista por primera vez
         renderUI();
     </script>
 </body>
